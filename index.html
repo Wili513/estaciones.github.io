@@ -1,33 +1,32 @@
-import pandas as pd
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Datos desde Google Sheets</title>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', { 'packages':['table'] });
+        google.charts.setOnLoadCallback(drawTable);
 
-url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pub?output=csv"
+        function drawTable() {
+            const query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pub?gid=0&single=true&output=csv');
+            query.setQuery('SELECT *');
+            query.send(handleQueryResponse);
+        }
 
-# Lee los datos
-df = pd.read_csv(url)
+        function handleQueryResponse(response) {
+            if (response.isError()) {
+                document.getElementById('table_div').innerHTML = 'Error: ' + response.getMessage();
+                return;
+            }
 
-# Verifica que cargó bien
-print(df.head())
-
-# Exporta a HTML
-html_table = df.to_html(index=False)
-
-# Guarda como archivo web
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(f"""
-    <html>
-    <head>
-        <title>Datos desde Google Sheets</title>
-        <style>
-            body {{ font-family: Arial; padding: 20px; }}
-            table {{ border-collapse: collapse; width: 100%; }}
-            th, td {{ border: 1px solid #ccc; padding: 8px; }}
-            th {{ background-color: #f0f0f0; }}
-        </style>
-    </head>
-    <body>
-        <h1>Datos desde Google Sheets</h1>
-        {html_table}
-    </body>
-    </html>
-    """)
-
+            const data = response.getDataTable();
+            const table = new google.visualization.Table(document.getElementById('table_div'));
+            table.draw(data, { showRowNumber: true, width: '100%', height: 'auto' });
+        }
+    </script>
+</head>
+<body>
+    <h1>Datos en vivo desde Google Sheets</h1>
+    <div id="table_div"></div>
+</body>
+</html>
