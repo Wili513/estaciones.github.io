@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Datos desde Google Sheets</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -40,27 +41,26 @@
   </table>
 
   <script>
-    https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pub?output=csv
+    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pub?output=csv';
 
-    fetch(url)
-      .then(res => res.text())
-      .then(data => {
-        const rows = data.trim().split('\n').map(row => row.split(','));
-
+    Papa.parse(url, {
+      download: true,
+      header: false,
+      complete: function(results) {
+        const rows = results.data;
         const thead = document.querySelector('#tabla thead');
         const tbody = document.querySelector('#tabla tbody');
 
-        // Encabezados
-        const headers = rows[0];
+        // Crear encabezados
         const headerRow = document.createElement('tr');
-        headers.forEach(header => {
+        rows[0].forEach(header => {
           const th = document.createElement('th');
           th.textContent = header;
           headerRow.appendChild(th);
         });
         thead.appendChild(headerRow);
 
-        // Filas de datos
+        // Agregar filas
         rows.slice(1).forEach(row => {
           const tr = document.createElement('tr');
           row.forEach(cell => {
@@ -70,7 +70,8 @@
           });
           tbody.appendChild(tr);
         });
-      });
+      }
+    });
   </script>
 </body>
 </html>
