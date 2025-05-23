@@ -1,17 +1,38 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Datos en vivo desde Google Sheets</title>
-  <style>
-    iframe {
-      border: none;
-      width: 100%;
-      height: 600px;
-    }
-  </style>
-</head>
-<body>
-  <h1>Datos en vivo desde Google Sheets</h1>
-  <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false&amp;chrome=false"></iframe>
-</body>
+  <head>
+    <title>Datos desde Google Sheets (limpio)</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', { packages: ['table'] });
+      google.charts.setOnLoadCallback(drawTable);
+
+      function drawTable() {
+        var query = new google.visualization.Query(
+          'https://docs.google.com/spreadsheets/d/1-ei_F4eLLUtAxo0R60tamaQ0-Kq0lD3CoZGjH7ODfp8/gviz/tq?sheet=Hoja1'
+        );
+        query.send(function (response) {
+          if (response.isError()) {
+            document.getElementById('table_div').innerHTML =
+              '❌ Error: ' + response.getMessage();
+            return;
+          }
+          var data = response.getDataTable();
+          var table = new google.visualization.Table(
+            document.getElementById('table_div')
+          );
+          table.draw(data, {
+            showRowNumber: true,
+            width: '100%',
+            height: 'auto',
+          });
+        });
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Datos en vivo desde Google Sheets</h1>
+    <div id="table_div">Cargando datos...</div>
+  </body>
 </html>
