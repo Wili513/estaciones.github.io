@@ -8,7 +8,7 @@
         google.charts.setOnLoadCallback(drawTable);
 
         function drawTable() {
-            var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1FwhZfpAFe0gTSn5-wX7FbY7NzHtJXoNUya2LQmfuvAA/gviz/tq?sheet=Hoja1');
+            var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1-ei_F4eLLUtAxo0R60tamaQ0-Kq0lD3CoZGjH7ODfp8/gviz/tq?sheet=Hoja1');
             query.send(function(response) {
                 if (response.isError()) {
                     document.getElementById('table_div').innerHTML = 'Error: ' + response.getMessage();
@@ -23,6 +23,6 @@
 </head>
 <body>
     <h1>Datos en vivo desde Google Sheets</h1>
-    <div id="1-ei_F4eLLUtAxo0R60tamaQ0-Kq0lD3CoZGjH7ODfp8"></div>
+    <div id="table_div"></div>
 </body>
 </html>
