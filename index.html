@@ -2,73 +2,23 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Datos desde Google Sheets</title>
+  <title>Prueba PapaParse</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      background-color: #f9f9f9;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2rem;
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #ccc;
-      text-align: left;
-    }
-    th {
-      background-color: #4CAF50;
-      color: white;
-    }
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-  </style>
 </head>
 <body>
-  <h1>Datos desde Google Sheets</h1>
-  <table id="tabla">
-    <thead></thead>
-    <tbody></tbody>
-  </table>
+  <h1>Prueba de conexión a Google Sheets</h1>
+  <pre id="output">Cargando...</pre>
 
   <script>
-    const url = https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pubhtml?gid=0&single=true
+    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pub?output=csv';
+
     Papa.parse(url, {
       download: true,
-      header: false,
       complete: function(results) {
-        const rows = results.data;
-        const thead = document.querySelector('#tabla thead');
-        const tbody = document.querySelector('#tabla tbody');
-
-        // Crear encabezados
-        const headerRow = document.createElement('tr');
-        rows[0].forEach(header => {
-          const th = document.createElement('th');
-          th.textContent = header;
-          headerRow.appendChild(th);
-        });
-        thead.appendChild(headerRow);
-
-        // Agregar filas
-        rows.slice(1).forEach(row => {
-          const tr = document.createElement('tr');
-          row.forEach(cell => {
-            const td = document.createElement('td');
-            td.textContent = cell;
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
-        });
+        document.getElementById("output").textContent = JSON.stringify(results.data, null, 2);
+      },
+      error: function(err) {
+        document.getElementById("output").textContent = "Error: " + err.message;
       }
     });
   </script>
