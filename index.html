@@ -1,13 +1,76 @@
-const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pubhtml?gid=0&single=true";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Datos desde Google Sheets</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Datos desde Google Sheets</h1>
+  <table id="tabla">
+    <thead></thead>
+    <tbody></tbody>
+  </table>
 
-fetch(url)
-  .then(res => res.text())
-  .then(data => {
-    const rows = data.split('\n').map(row => row.split(','));
-    const lista = document.getElementById("lista");
-    rows.forEach(cols => {
-      const item = document.createElement("li");
-      item.textContent = cols.join(" - ");
-      lista.appendChild(item);
-    });
-  });
+  <script>
+    const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pub?output=csv';
+
+    fetch(url)
+      .then(res => res.text())
+      .then(data => {
+        const rows = data.trim().split('\n').map(row => row.split(','));
+
+        const thead = document.querySelector('#tabla thead');
+        const tbody = document.querySelector('#tabla tbody');
+
+        // Encabezados
+        const headers = rows[0];
+        const headerRow = document.createElement('tr');
+        headers.forEach(header => {
+          const th = document.createElement('th');
+          th.textContent = header;
+          headerRow.appendChild(th);
+        });
+        thead.appendChild(headerRow);
+
+        // Filas de datos
+        rows.slice(1).forEach(row => {
+          const tr = document.createElement('tr');
+          row.forEach(cell => {
+            const td = document.createElement('td');
+            td.textContent = cell;
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+      });
+  </script>
+</body>
+</html>
