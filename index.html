@@ -8,7 +8,7 @@
         google.charts.setOnLoadCallback(drawTable);
 
         function drawTable() {
-            const query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pub?gid=0&single=true&output=csv');
+            const query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pubhtml?gid=0&single=true');
             query.setQuery('SELECT *');
             query.send(handleQueryResponse);
         }
