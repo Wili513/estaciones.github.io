@@ -1,15 +1,17 @@
 import pandas as pd
 
-# Pega aquí tu enlace CSV
-url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pub?output=csv'
+url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pub?output=csv"
 
-# Lee el CSV desde Google Sheets
+# Lee los datos
 df = pd.read_csv(url)
 
-# Convierte a HTML
+# Verifica que cargó bien
+print(df.head())
+
+# Exporta a HTML
 html_table = df.to_html(index=False)
 
-# Guarda como archivo HTML
+# Guarda como archivo web
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(f"""
     <html>
@@ -23,8 +25,9 @@ with open("index.html", "w", encoding="utf-8") as f:
         </style>
     </head>
     <body>
-        <h1>Datos en vivo desde Google Sheets</h1>
+        <h1>Datos desde Google Sheets</h1>
         {html_table}
     </body>
     </html>
     """)
+
