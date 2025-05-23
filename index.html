@@ -1,10 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Mi Página Web</title>
+  <meta charset="UTF-8" />
+  <title>Datos desde Google Sheets</title>
 </head>
 <body>
-  <h1>¡Hola, mundo!</h1>
-  <p>Esta es mi primera página en GitHub Pages.</p>
+  <h1>Listado desde Google Sheets</h1>
+  <ul id="lista"></ul>
+
+  <script>
+    const sheetID = '1-ei_F4eLLUtAxo0R60tamaQ0-Kq0lD3CoZGjH7ODfp8';
+    const gid = '0'; // cambia si usas otra pestaña
+    const url = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?tqx=out:json&gid=${gid}`;
+
+    fetch(url)
+      .then(res => res.text())
+      .then(text => {
+        const json = JSON.parse(text.substring(47).slice(0, -2)); // limpiamos el formato GVIZ
+        const rows = json.table.rows;
+        const lista = document.getElementById("lista");
+        rows.forEach(row => {
+          const item = document.createElement("li");
+          item.textContent = row.c.map(cell => cell?.v).join(" - ");
+          lista.appendChild(item);
+        });
+      });
+  </script>
 </body>
 </html>
+
