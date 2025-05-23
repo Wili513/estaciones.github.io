@@ -2,31 +2,27 @@
 <html>
 <head>
     <title>Datos desde Google Sheets</title>
-    <script src="https://www.gstatic.com/charts/loader.js"></script>
-    <script>
-        google.charts.load('current', { 'packages':['table'] });
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['table']});
         google.charts.setOnLoadCallback(drawTable);
 
         function drawTable() {
-            const query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pubhtml?gid=0&single=true');
-            query.setQuery('SELECT *');
-            query.send(handleQueryResponse);
-        }
-
-        function handleQueryResponse(response) {
-            if (response.isError()) {
-                document.getElementById('table_div').innerHTML = 'Error: ' + response.getMessage();
-                return;
-            }
-
-            const data = response.getDataTable();
-            const table = new google.visualization.Table(document.getElementById('table_div'));
-            table.draw(data, { showRowNumber: true, width: '100%', height: 'auto' });
+            var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1FwhZfpAFe0gTSn5-wX7FbY7NzHtJXoNUya2LQmfuvAA/gviz/tq?sheet=Hoja1');
+            query.send(function(response) {
+                if (response.isError()) {
+                    document.getElementById('table_div').innerHTML = 'Error: ' + response.getMessage();
+                    return;
+                }
+                var data = response.getDataTable();
+                var table = new google.visualization.Table(document.getElementById('table_div'));
+                table.draw(data, {showRowNumber: true, width: '100%', height: 'auto'});
+            });
         }
     </script>
 </head>
 <body>
     <h1>Datos en vivo desde Google Sheets</h1>
-    <div id="table_div"></div>
+    <div id="1-ei_F4eLLUtAxo0R60tamaQ0-Kq0lD3CoZGjH7ODfp8"></div>
 </body>
 </html>
