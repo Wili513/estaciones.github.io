@@ -1,25 +1,30 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Prueba PapaParse</title>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-</head>
-<body>
-  <h1>Prueba de conexión a Google Sheets</h1>
-  <pre id="output">Cargando...</pre>
+import pandas as pd
 
-  <script>
-    const url = https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pubhtml?gid=0&single=true
-    Papa.parse(url, {
-      download: true,
-      complete: function(results) {
-        document.getElementById("output").textContent = JSON.stringify(results.data, null, 2);
-      },
-      error: function(err) {
-        document.getElementById("output").textContent = "Error: " + err.message;
-      }
-    });
-  </script>
-</body>
-</html>
+# Pega aquí tu enlace CSV
+url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTSUCQaOUyiAbBA-I6pQusUb_oZEC_B1-H8du2xJvK8_BK75DHVETLMbkhdpUupVTSfEI7smukbuOFK/pubhtml?gid=0&single=true'
+
+# Lee el CSV desde Google Sheets
+df = pd.read_csv(url)
+
+# Convierte a HTML
+html_table = df.to_html(index=False)
+
+# Guarda como archivo HTML
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(f"""
+    <html>
+    <head>
+        <title>Datos desde Google Sheets</title>
+        <style>
+            body {{ font-family: Arial; padding: 20px; }}
+            table {{ border-collapse: collapse; width: 100%; }}
+            th, td {{ border: 1px solid #ccc; padding: 8px; }}
+            th {{ background-color: #f0f0f0; }}
+        </style>
+    </head>
+    <body>
+        <h1>Datos en vivo desde Google Sheets</h1>
+        {html_table}
+    </body>
+    </html>
+    """)
