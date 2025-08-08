@@ -1,38 +1,65 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Datos desde Google Sheets (limpio)</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-      google.charts.load('current', { packages: ['table'] });
-      google.charts.setOnLoadCallback(drawTable);
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Menú de Sensores</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <!-- Menú de navegación -->
+  <nav>
+    <a href="index.html">🏠 Inicio</a>
+    <a href="lluvia.html">📊 Lluvia</a>
+    <a href="lluvia_diaria.html">📅 Lluvia diaria</a>
+    <a href="temperatura.html">🌡️ Temperatura</a>
+    <a href="humedad.html">💧 Humedad</a>
+    <a href="graficas.html">📈 Gráficas</a>
+  </nav>
 
-      function drawTable() {
-        var query = new google.visualization.Query(
-          'https://docs.google.com/spreadsheets/d/1-ei_F4eLLUtAxo0R60tamaQ0-Kq0lD3CoZGjH7ODfp8/gviz/tq?sheet=Hoja1'
-        );
-        query.send(function (response) {
-          if (response.isError()) {
-            document.getElementById('table_div').innerHTML =
-              '❌ Error: ' + response.getMessage();
-            return;
-          }
-          var data = response.getDataTable();
-          var table = new google.visualization.Table(
-            document.getElementById('table_div')
-          );
-          table.draw(data, {
-            showRowNumber: true,
-            width: '100%',
-            height: 'auto',
-          });
-        });
-      }
-    </script>
-  </head>
-  <body>
-    <h1>Datos en vivo desde Google Sheets</h1>
-    <div id="table_div">Cargando datos...</div>
-  </body>
-</html>
+  <h1>Panel de Sensores</h1>
+
+  <div class="contenedor-tarjetas">
+    <!-- Tarjeta Lluvia -->
+    <div class="tarjeta">
+      <img src="https://cdn-icons-png.flaticon.com/512/414/414974.png" alt="Lluvia">
+      <h3>Sensor de Lluvia</h3>
+      <p id="valorLluvia">-</p>
+      <a href="lluvia.html">Ver datos</a>
+    </div>
+
+    <!-- Tarjeta Lluvia diaria -->
+    <div class="tarjeta">
+      <img src="https://cdn-icons-png.flaticon.com/512/2904/2904978.png" alt="Lluvia diaria">
+      <h3>Acumulado Diario</h3>
+      <p id="valorLluviaDiaria">-</p>
+      <a href="lluvia_diaria.html">Ver acumulado</a>
+    </div>
+
+    <!-- Tarjeta Temperatura -->
+    <div class="tarjeta">
+      <img src="https://cdn-icons-png.flaticon.com/512/1684/1684375.png" alt="Temperatura">
+      <h3>Temperatura</h3>
+      <p id="valorTemp">-</p>
+      <a href="temperatura.html">Ver datos</a>
+    </div>
+
+    <!-- Tarjeta Humedad -->
+    <div class="tarjeta">
+      <img src="https://cdn-icons-png.flaticon.com/512/728/728093.png" alt="Humedad">
+      <h3>Humedad</h3>
+      <p id="valorHum">-</p>
+      <a href="humedad.html">Ver datos</a>
+    </div>
+
+    <!-- Tarjeta Gráficas -->
+    <div class="tarjeta">
+      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Gráficas">
+      <h3>Gráficas de Sensores</h3>
+      <a href="graficas.html">Ver gráficas</a>
+    </div>
+  </div>
+
+  <script>
+    // Cargar últimos valores desde local
+
