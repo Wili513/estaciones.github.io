@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Menú de Sensores</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <!-- Menú de navegación -->
+  <nav>
+    <a href="index.html">🏠 Inicio</a>
+    <a href="lluvia.html">📊 Lluvia</a>
+    <a href="lluvia_diaria.html">📅 Lluvia diaria</a>
+    <a href="temperatura.html">🌡️ Temperatura</a>
+    <a href="humedad.html">💧 Humedad</a>
+    <a href="graficas.html">📈 Gráficas</a>
+  </nav>
+
+  <h1>Panel de Sensores</h1>
+
+  <div class="contenedor-tarjetas">
+    <!-- Tarjeta Lluvia -->
+    <div class="tarjeta">
+      <img src="https://cdn-icons-png.flaticon.com/512/414/414974.png" alt="Lluvia">
+      <h3>Sensor de Lluvia</h3>
+      <p id="valorLluvia">-</p>
+      <a href="lluvia.html">Ver datos</a>
+    </div>
+
+    <!-- Tarjeta Lluvia diaria -->
+    <div class="tarjeta">
+      <img src="https://cdn-icons-png.flaticon.com/512/2904/2904978.png" alt="Lluvia diaria">
+      <h3>Acumulado Diario</h3>
+      <p id="valorLluviaDiaria">-</p>
+      <a href="lluvia_diaria.html">Ver acumulado</a>
+    </div>
+
+    <!-- Tarjeta Temperatura -->
+    <div class="tarjeta">
+      <img src="https://cdn-icons-png.flaticon.com/512/1684/1684375.png" alt="Temperatura">
+      <h3>Temperatura</h3>
+      <p id="valorTemp">-</p>
+      <a href="dht21.html">Ver datos</a>
+    </div>
+
+    <!-- Tarjeta Humedad -->
+    <div class="tarjeta">
+      <img src="https://cdn-icons-png.flaticon.com/512/728/728093.png" alt="Humedad">
+      <h3>Humedad</h3>
+      <p id="valorHum">-</p>
+      <a href="dht21.html">Ver datos</a>
+    </div>
+
+    <!-- Tarjeta Gráficas -->
+    <div class="tarjeta">
+      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Gráficas">
+      <h3>Gráficas</h3>
+      <a href="graficas.html">Ver gráficas</a>
+    </div>
