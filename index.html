@@ -2,57 +2,90 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Menú de Sensores</title>
+  <title>Datos Lluvia</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
-  <!-- Menú de navegación -->
   <nav>
     <a href="index.html">🏠 Inicio</a>
     <a href="lluvia.html">📊 Lluvia</a>
+    <a href="dht21.html">🌡️ DHT21</a>
     <a href="lluvia_diaria.html">📅 Lluvia diaria</a>
-    <a href="graficas.html">📈 Gráficas</a>
+    <a href="graficas.html">📅 Graficas</a>
   </nav>
 
-  <h1>Panel de Sensores</h1>
+  <h2>Datos Lluvia (Pluviómetro)</h2>
 
-  <div class="contenedor-tarjetas">
-    <!-- Tarjeta Lluvia -->
-    <div class="tarjeta">
-      <img src="https://cdn-icons-png.flaticon.com/512/414/414974.png" alt="Lluvia">
-      <h3>Sensor de Lluvia</h3>
-      <p id="valorLluvia">-</p>
-      <a href="lluvia.html">Ver datos</a>
-    </div>
+  <label for="filtroCantidad">Mostrar últimos:</label>
+  <select id="filtroCantidad">
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="todos">Todos</option>
+  </select>
 
-    <!-- Tarjeta Lluvia diaria -->
-    <div class="tarjeta">
-      <img src="https://cdn-icons-png.flaticon.com/512/2904/2904978.png" alt="Lluvia diaria">
-      <h3>Acumulado Diario</h3>
-      <p id="valorLluviaDiaria">-</p>
-      <a href="lluvia_diaria.html">Ver acumulado</a>
-    </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Lluvia (mm)</th>
+      </tr>
+    </thead>
+    <tbody id="tablaLluvia"></tbody>
+  </table>
 
-    <!-- Tarjeta Temperatura -->
-    <div class="tarjeta">
-      <img src="https://cdn-icons-png.flaticon.com/512/1684/1684375.png" alt="Temperatura">
-      <h3>Temperatura</h3>
-      <p id="valorTemp">-</p>
-      <a href="dht21.html">Ver datos</a>
-    </div>
+  <script>
+    const tabla = document.getElementById("tablaLluvia");
+    const filtro = document.getElementById("filtroCantidad");
+    let historial = JSON.parse(localStorage.getItem("lluviaHistorial")) || [];
 
-    <!-- Tarjeta Humedad -->
-    <div class="tarjeta">
-      <img src="https://cdn-icons-png.flaticon.com/512/728/728093.png" alt="Humedad">
-      <h3>Humedad</h3>
-      <p id="valorHum">-</p>
-      <a href="dht21.html">Ver datos</a>
-    </div>
+    function mostrarDatos() {
+      tabla.innerHTML = "";
+      let datosAMostrar = [...historial];
+      if (filtro.value !== "todos") {
+        datosAMostrar = datosAMostrar.slice(-parseInt(filtro.value));
+      }
+      datosAMostrar.reverse().forEach(fila => {
+        tabla.insertAdjacentHTML("beforeend", `<tr>
+          <td>${fila.fecha}</td>
+          <td>${fila.hora}</td>
+          <td>${fila.valor}</td>
+        </tr>`);
+      });
+    }
 
-    <!-- Tarjeta Gráficas -->
-    <div class="tarjeta">
-      <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Gráficas">
-      <h3>Gráficas</h3>
-      <a href="graficas.html">Ver gráficas</a>
-    </div>
+    // Mostrar datos iniciales
+    mostrarDatos();
+
+    // Cambiar cantidad mostrada
+    filtro.addEventListener("change", mostrarDatos);
+
+    // Conexión MQTT
+    const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
+    const topic = "sensor/datos";
+
+    client.on("connect", () => {
+      client.subscribe(topic);
+    });
+
+    client.on("message", (t, message) => {
+      try {
+        const datos = JSON.parse(message.toString());
+        if (datos.tipo !== "lluvia") return;
+
+        const ahora = new Date();
+        const fecha = ahora.toISOString().split("T")[0];
+        const hora = ahora.toTimeString().split(" ")[0];
+
+        const nuevaFila = { fecha, hora, valor: datos.valor ?? "" };
+        historial.push(nuevaFila);
+        localStorage.setItem("lluviaHistorial", JSON.stringify(historial));
+
+        mostrarDatos();
+      } catch (e) {}
+    });
+  </script>
+</body>
+</html>
