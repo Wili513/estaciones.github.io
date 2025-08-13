@@ -16,6 +16,15 @@
   </nav>
 
   <h2>Datos Lluvia (Pluviómetro)</h2>
+
+  <label for="filtroCantidad">Mostrar últimos:</label>
+  <select id="filtroCantidad">
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="todos">Todos</option>
+  </select>
+
   <table>
     <thead>
       <tr>
@@ -29,16 +38,31 @@
 
   <script>
     const tabla = document.getElementById("tablaLluvia");
+    const filtro = document.getElementById("filtroCantidad");
     let historial = JSON.parse(localStorage.getItem("lluviaHistorial")) || [];
 
-    historial.forEach(fila => {
-      tabla.insertAdjacentHTML("beforeend", `<tr>
-        <td>${fila.fecha}</td>
-        <td>${fila.hora}</td>
-        <td>${fila.valor}</td>
-      </tr>`);
-    });
+    function mostrarDatos() {
+      tabla.innerHTML = "";
+      let datosAMostrar = [...historial];
+      if (filtro.value !== "todos") {
+        datosAMostrar = datosAMostrar.slice(-parseInt(filtro.value));
+      }
+      datosAMostrar.reverse().forEach(fila => {
+        tabla.insertAdjacentHTML("beforeend", `<tr>
+          <td>${fila.fecha}</td>
+          <td>${fila.hora}</td>
+          <td>${fila.valor}</td>
+        </tr>`);
+      });
+    }
 
+    // Mostrar datos iniciales
+    mostrarDatos();
+
+    // Cambiar cantidad mostrada
+    filtro.addEventListener("change", mostrarDatos);
+
+    // Conexión MQTT
     const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
     const topic = "sensor/datos";
 
@@ -59,11 +83,7 @@
         historial.push(nuevaFila);
         localStorage.setItem("lluviaHistorial", JSON.stringify(historial));
 
-        tabla.insertAdjacentHTML("afterbegin", `<tr>
-          <td>${fecha}</td>
-          <td>${hora}</td>
-          <td>${datos.valor ?? ""}</td>
-        </tr>`);
+        mostrarDatos();
       } catch (e) {}
     });
   </script>
