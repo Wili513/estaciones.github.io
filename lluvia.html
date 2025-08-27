@@ -64,7 +64,7 @@
 
     // Conexión MQTT
     const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
-    const topic = "sensor/datos";
+    const topic = "estacion/portatil/patios/sensores";
 
     client.on("connect", () => {
       client.subscribe(topic);
