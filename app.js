@@ -1,5 +1,5 @@
 const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
-const topic = "sensor/datos"; // <-- cámbialo si tu ESP32 usa otro
+const topic = "estacion/portatil/patios/sensores"; // <-- cámbialo si tu ESP32 usa otro
 
 let ultimaTemperatura = "";
 let ultimaHumedad = "";
