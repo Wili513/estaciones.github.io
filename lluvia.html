@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datos Lluvia</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">🏠 Inicio</a>
+    <a href="dht21.html">🌡️ DHT21</a>
+    <a href="lluvia.html">🌧️ Lluvia</a>
+    <a href="lluvia_acumulada.html">📊 Lluvia Acumulada</a>
+  </nav>
+  <h2>Datos Pluviómetro</h2>
+  <label for="filtroLluvia">Mostrar últimos:</label>
+  <select id="filtroLluvia">
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="todos">Todos</option>
+  </select>
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha/Hora</th>
+        <th>Lluvia (mm)</th>
+      </tr>
+    </thead>
+    <tbody id="tablaLluvia"></tbody>
+  </table>
+  <script src="lluvia.js" defer></script>
+</body>
+</html>

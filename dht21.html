@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datos DHT21</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">🏠 Inicio</a>
+    <a href="dht21.html">🌡️ DHT21</a>
+    <a href="lluvia.html">🌧️ Lluvia</a>
+    <a href="lluvia_acumulada.html">📊 Lluvia Acumulada</a>
+  </nav>
+  <h2>Datos DHT21 (Temperatura y Humedad)</h2>
+  <label for="filtroDHT">Mostrar últimos:</label>
+  <select id="filtroDHT">
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="todos">Todos</option>
+  </select>
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha/Hora</th>
+        <th>Temperatura (°C)</th>
+        <th>Humedad (%)</th>
+      </tr>
+    </thead>
+    <tbody id="tablaDHT"></tbody>
+  </table>
+  <script src="dht21.js" defer></script>
+</body>
+</html>
