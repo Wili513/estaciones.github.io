@@ -3,34 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <title>Datos DHT21</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f8f9fa; }
+    h2 { color: #007bff; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background: #007bff; color: white; }
+  </style>
 </head>
 <body>
-  <nav>
-    <a href="index.html">🏠 Inicio</a>
-    <a href="lluvia.html">📊 Lluvia</a>
-    <a href="dht21.html">🌡️ DHT21</a>
-    <a href="lluvia_diaria.html">📅 Lluvia diaria</a>
-    <a href="graficas.html">📅 Graficas</a>
-  </nav>
-
   <h2>Datos DHT21 (Temperatura y Humedad)</h2>
-
-  <!-- Filtro -->
-  <label for="filtro">Mostrar últimos: </label>
-  <select id="filtro">
-    <option value="5">5</option>
-    <option value="10">10</option>
-    <option value="20">20</option>
-    <option value="todos">Todos</option>
-  </select>
-
   <table>
     <thead>
       <tr>
-        <th>Fecha</th>
-        <th>Hora</th>
+        <th>Fecha/Hora</th>
         <th>Temperatura (°C)</th>
         <th>Humedad (%)</th>
       </tr>
@@ -40,61 +26,29 @@
 
   <script>
     const tabla = document.getElementById("tablaDHT");
-    const filtro = document.getElementById("filtro");
-    let historial = JSON.parse(localStorage.getItem("dhtHistorial")) || [];
 
-    // Función para renderizar tabla según filtro
-    function renderTabla() {
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSxObb2nasmk3BsnNDjWiJ8R80J-6Z-pQFcHU5DTYf3ybR4VLBBGxAV6e5JaEuEYY6rPVoRJxeZ4a9_/pub?gid=1773567797&single=true&output=csv"; // mismo CSV publicado
+
+    async function cargarDatos() {
+      const res = await fetch(SHEET_URL);
+      const text = await res.text();
+      const filas = text.split(/\r?\n/).filter(l => l.trim() !== "");
+      const datos = filas.slice(1); // quitar encabezado
+
       tabla.innerHTML = "";
-      let datosMostrados;
-
-      if (filtro.value === "todos") {
-        datosMostrados = historial.slice().reverse();
-      } else {
-        const cantidad = parseInt(filtro.value);
-        datosMostrados = historial.slice(-cantidad).reverse();
-      }
-
-      datosMostrados.forEach(fila => {
-        tabla.insertAdjacentHTML("beforeend", `<tr>
-          <td>${fila.fecha}</td>
-          <td>${fila.hora}</td>
-          <td>${fila.temp}</td>
-          <td>${fila.hum}</td>
-        </tr>`);
+      datos.slice(-20).reverse().forEach(fila => {
+        const cols = fila.split(",");
+        tabla.insertAdjacentHTML("beforeend", `
+          <tr>
+            <td>${cols[0]}</td>
+            <td>${cols[1]}</td>
+            <td>${cols[2]}</td>
+          </tr>
+        `);
       });
     }
 
-    // Evento cuando cambia el filtro
-    filtro.addEventListener("change", renderTabla);
-
-    // Render inicial
-    renderTabla();
-
-    // MQTT
-    const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
-    const topic = "sensor/datos";
-
-    client.on("connect", () => {
-      client.subscribe(topic);
-    });
-
-    client.on("message", (t, message) => {
-      try {
-        const datos = JSON.parse(message.toString());
-        if (datos.tipo !== "dht21") return;
-
-        const ahora = new Date();
-        const fecha = ahora.toISOString().split("T")[0];
-        const hora = ahora.toTimeString().split(" ")[0];
-
-        const nuevaFila = { fecha, hora, temp: datos.temperatura ?? "", hum: datos.humedad ?? "" };
-        historial.push(nuevaFila);
-        localStorage.setItem("dhtHistorial", JSON.stringify(historial));
-
-        renderTabla(); // refrescar según el filtro
-      } catch (e) {}
-    });
+    cargarDatos();
   </script>
 </body>
 </html>
