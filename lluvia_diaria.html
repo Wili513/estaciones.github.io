@@ -16,6 +16,12 @@
   </nav>
 
   <h2>Acumulado Diario de Lluvia</h2>
+
+  <!-- Filtro por fecha -->
+  <label for="filtroFecha">Filtrar por fecha: </label>
+  <input type="date" id="filtroFecha">
+  <button id="btnReset">Mostrar todos</button>
+
   <table>
     <thead>
       <tr>
@@ -28,9 +34,11 @@
 
   <script>
     const tabla = document.getElementById("tablaAcumulado");
+    const filtroFecha = document.getElementById("filtroFecha");
+    const btnReset = document.getElementById("btnReset");
 
     // Función para mostrar acumulados
-    function mostrarAcumulados() {
+    function mostrarAcumulados(fechaFiltro = null) {
       const historial = JSON.parse(localStorage.getItem("lluviaHistorial")) || [];
       const acumulados = {};
 
@@ -42,7 +50,14 @@
       });
 
       tabla.innerHTML = "";
-      Object.keys(acumulados).sort().reverse().forEach(fecha => {
+
+      let fechas = Object.keys(acumulados).sort().reverse();
+
+      if (fechaFiltro) {
+        fechas = fechas.filter(f => f === fechaFiltro);
+      }
+
+      fechas.forEach(fecha => {
         tabla.insertAdjacentHTML("beforeend", `<tr>
           <td>${fecha}</td>
           <td>${acumulados[fecha].toFixed(2)}</td>
@@ -50,11 +65,22 @@
       });
     }
 
+    // Eventos de filtro
+    filtroFecha.addEventListener("change", () => {
+      mostrarAcumulados(filtroFecha.value);
+    });
+
+    btnReset.addEventListener("click", () => {
+      filtroFecha.value = "";
+      mostrarAcumulados();
+    });
+
+    // Render inicial
     mostrarAcumulados();
 
     // Conexión MQTT para actualizar en tiempo real
     const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
-    const topic = "estacion/portatil/patios/sensores";
+    const topic = "sensor/datos";
 
     client.on("connect", () => {
       client.subscribe(topic);
@@ -73,7 +99,7 @@
         historial.push({ fecha, hora, valor: datos.valor ?? 0 });
         localStorage.setItem("lluviaHistorial", JSON.stringify(historial));
 
-        mostrarAcumulados();
+        mostrarAcumulados(filtroFecha.value || null);
       } catch (e) {}
     });
   </script>
