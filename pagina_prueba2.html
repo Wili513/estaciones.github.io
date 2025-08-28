@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Prueba Google Sheets CSV</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f8f9fa; }
+    h2 { color: #007bff; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background: #007bff; color: white; }
+  </style>
+</head>
+<body>
+  <h2>Datos desde Google Sheets</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Hora</th>
+        <th>Temperatura (°C)</th>
+        <th>Humedad (%)</th>
+        <th>Lluvia (mm)</th>
+      </tr>
+    </thead>
+    <tbody id="tablaDatos"></tbody>
+  </table>
+
+  <script>
+    const tabla = document.getElementById("tablaDatos");
+
+    // 👉 Pega aquí la URL de tu hoja publicada
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSxObb2nasmk3BsnNDjWiJ8R80J-6Z-pQFcHU5DTYf3ybR4VLBBGxAV6e5JaEuEYY6rPVoRJxeZ4a9_/pub?gid=1773567797&single=true&output=csv";
+
+    async function cargarDatos() {
+      try {
+        const res = await fetch(SHEET_URL);
+        const text = await res.text();
+
+        // separar filas (soporta \r\n y \n)
+        const filas = text.split(/\r?\n/).filter(l => l.trim() !== "");
+        const datos = filas.slice(1); // quitar cabecera
+
+        tabla.innerHTML = "";
+
+        datos.forEach(fila => {
+          const cols = fila.split(",");
+          tabla.insertAdjacentHTML("beforeend", `
+            <tr>
+              <td>${cols[0]}</td>
+              <td>${cols[1]}</td>
+              <td>${cols[2]}</td>
+              <td>${cols[3]}</td>
+            </tr>
+          `);
+        });
+      } catch (err) {
+        console.error("Error cargando datos:", err);
+      }
+    }
+
+    // cargar al abrir la página
+    cargarDatos();
+  </script>
+</body>
+</html>
