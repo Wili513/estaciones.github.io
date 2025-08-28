@@ -16,6 +16,16 @@
   </nav>
 
   <h2>Datos DHT21 (Temperatura y Humedad)</h2>
+
+  <!-- Filtro -->
+  <label for="filtro">Mostrar últimos: </label>
+  <select id="filtro">
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="todos">Todos</option>
+  </select>
+
   <table>
     <thead>
       <tr>
@@ -30,19 +40,40 @@
 
   <script>
     const tabla = document.getElementById("tablaDHT");
+    const filtro = document.getElementById("filtro");
     let historial = JSON.parse(localStorage.getItem("dhtHistorial")) || [];
 
-    historial.forEach(fila => {
-      tabla.insertAdjacentHTML("beforeend", `<tr>
-        <td>${fila.fecha}</td>
-        <td>${fila.hora}</td>
-        <td>${fila.temp}</td>
-        <td>${fila.hum}</td>
-      </tr>`);
-    });
+    // Función para renderizar tabla según filtro
+    function renderTabla() {
+      tabla.innerHTML = "";
+      let datosMostrados;
 
+      if (filtro.value === "todos") {
+        datosMostrados = historial.slice().reverse();
+      } else {
+        const cantidad = parseInt(filtro.value);
+        datosMostrados = historial.slice(-cantidad).reverse();
+      }
+
+      datosMostrados.forEach(fila => {
+        tabla.insertAdjacentHTML("beforeend", `<tr>
+          <td>${fila.fecha}</td>
+          <td>${fila.hora}</td>
+          <td>${fila.temp}</td>
+          <td>${fila.hum}</td>
+        </tr>`);
+      });
+    }
+
+    // Evento cuando cambia el filtro
+    filtro.addEventListener("change", renderTabla);
+
+    // Render inicial
+    renderTabla();
+
+    // MQTT
     const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt");
-    const topic = "estacion/portatil/patios/sensores";
+    const topic = "sensor/datos";
 
     client.on("connect", () => {
       client.subscribe(topic);
@@ -61,12 +92,7 @@
         historial.push(nuevaFila);
         localStorage.setItem("dhtHistorial", JSON.stringify(historial));
 
-        tabla.insertAdjacentHTML("afterbegin", `<tr>
-          <td>${fecha}</td>
-          <td>${hora}</td>
-          <td>${datos.temperatura ?? ""}</td>
-          <td>${datos.humedad ?? ""}</td>
-        </tr>`);
+        renderTabla(); // refrescar según el filtro
       } catch (e) {}
     });
   </script>
