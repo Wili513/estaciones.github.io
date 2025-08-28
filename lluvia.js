@@ -1,6 +1,6 @@
 const tablaLluvia = document.getElementById("tablaLluvia");
 const filtroLluvia = document.getElementById("filtroLluvia");
-const SHEET_URL = "TU_URL_DE_SHEETS";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2ChkKcZ75F8HQSGIDIx18UHtHYzDH-p9wcxsw2IMQyiP9NFQmqLvY7fwh4us6bpHsn3YDiLUIhfp/pub?gid=0&single=true&output=csv";
 let datosLluvia = [];
 
 async function cargarDatosLluvia() {
