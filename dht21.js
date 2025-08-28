@@ -1,6 +1,6 @@
 const tablaDHT = document.getElementById("tablaDHT");
 const filtroDHT = document.getElementById("filtroDHT");
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2ChkKcZ75F8HQSGIDIx18UHtHYzDH-p9wcxsw2IMQyiP9NFQmqLvY7fwh4us6bpHsn3YDiLUIhfp/pub?gid=1871179903&single=true&output=csv";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2ChkKcZ75F8HQSGIDIx18UHtHYzDH-p9wcxsw2IMQyiP9NFQmqLvY7fwh4us6bpHsn3YDiLUIhfp/pub?gid=1825751976&single=true&output=csv";
 let datosDHT = [];
 
 async function cargarDatosDHT() {
