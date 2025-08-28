@@ -1,6 +1,6 @@
 const tablaAcum = document.getElementById("tablaAcumulado");
 const filtroAcum = document.getElementById("filtroAcum");
-const SHEET_URL = "TU_URL_DE_SHEETS";
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2ChkKcZ75F8HQSGIDIx18UHtHYzDH-p9wcxsw2IMQyiP9NFQmqLvY7fwh4us6bpHsn3YDiLUIhfp/pub?gid=0&single=true&output=csv";
 let acumulados = [];
 
 async function cargarDatosAcum() {
