@@ -1,28 +1,29 @@
 body {
   font-family: Arial, sans-serif;
   margin: 20px;
-  background: #f8f9fa;
+  background: #f9f9f9;
+  color: #333;
 }
-nav {
-  background: #007bff;
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+th, td {
+  border: 1px solid #ccc;
   padding: 10px;
   text-align: center;
-  margin: -20px -20px 20px -20px;
 }
-nav a {
-  color: white;
-  margin: 0 15px;
-  text-decoration: none;
+
+th {
+  background: #f0f0f0;
   font-weight: bold;
 }
-nav a:hover { text-decoration: underline; }
-h1, h2 { color: #007bff; text-align: center; }
-label { font-weight: bold; margin-right: 10px; }
-select { padding: 5px; margin: 10px 0; }
-table { width: 100%; border-collapse: collapse; background: white; }
-th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-th { background: #007bff; color: white; }
-.contenedor { display: flex; justify-content: center; gap: 40px; margin-top: 40px; }
-.card { text-align: center; }
-.card img { width: 200px; border-radius: 10px; cursor: pointer; border: 2px solid #007bff; }
-.card p { margin-top: 10px; font-weight: bold; }
