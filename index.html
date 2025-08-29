@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Datos Google Sheets con coma decimal</title>
+  <title>Google Sheets CSV limpio</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; background: #f8f9fa; }
     h2 { color: #007bff; text-align: center; }
@@ -15,50 +15,34 @@
   <h2>Datos desde Google Sheets</h2>
   <p id="ultimaActualizacion" style="text-align:center; font-weight:bold;"></p>
   <table>
-    <thead>
-      <tr>
-        <th>Hora</th>
-        <th>Temperatura (°C)</th>
-        <th>Humedad (%)</th>
-        <th>Lluvia (mm)</th>
-      </tr>
-    </thead>
+    <thead id="cabecera"></thead>
     <tbody id="tablaDatos"></tbody>
   </table>
 
   <script>
+    const SHEET_URL = "TU_URL_CSV_AQUI"; // reemplaza con tu URL publicada
     const tabla = document.getElementById("tablaDatos");
+    const cabecera = document.getElementById("cabecera");
     const actualizar = document.getElementById("ultimaActualizacion");
-
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2ChkKcZ75F8HQSGIDIx18UHtHYzDH-p9wcxsw2IMQyiP9NFQmqLvY7fwh4us6bpHsn3YDiLUIhfp/pub?gid=1825751976&single=true&output=csv"; // reemplaza con tu URL publicada
 
     async function cargarDatos() {
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
 
+        // Separar filas
         const filas = text.split(/\r?\n/).filter(l => l.trim() !== "");
-        const datos = filas.slice(1); // quitar cabecera
-
         tabla.innerHTML = "";
+        cabecera.innerHTML = "";
 
-        datos.forEach(fila => {
-          // separar por tabulador (\t)
-          const cols = fila.split("\t").map(c => {
-            // reemplazar coma por punto y convertir a número si es posible
-            const valorLimpio = c.replace(/"/g, "").replace(",", ".");
-            const num = parseFloat(valorLimpio);
-            return isNaN(num) ? c : num;
-          });
+        // Primera fila como cabecera
+        const columnas = filas[0].split(",");
+        cabecera.insertAdjacentHTML("beforeend", `<tr>${columnas.map(c => `<th>${c}</th>`).join("")}</tr>`);
 
-          tabla.insertAdjacentHTML("beforeend", `
-            <tr>
-              <td>${cols[0]}</td>
-              <td>${cols[1]}</td>
-              <td>${cols[2]}</td>
-              <td>${cols[3]}</td>
-            </tr>
-          `);
+        // Filas restantes como valores
+        filas.slice(1).forEach(fila => {
+          const cols = fila.split(",").map(c => c.trim());
+          tabla.insertAdjacentHTML("beforeend", `<tr>${cols.map(c => `<td>${c}</td>`).join("")}</tr>`);
         });
 
         actualizar.textContent = `Última actualización: ${new Date().toLocaleTimeString()}`;
@@ -68,7 +52,7 @@
     }
 
     cargarDatos();
-    setInterval(cargarDatos, 60000); // actualizar cada 60s
+    setInterval(cargarDatos, 60000); // refresca cada 60 segundos
   </script>
 </body>
 </html>
