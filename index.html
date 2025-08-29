@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Datos desde Google Sheets (CSV)</title>
+  <meta charset="UTF-8" />
+  <title>Datos Google Sheets con coma decimal</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; }
-    h2 { color: #0066cc; }
-    table { margin: 20px auto; border-collapse: collapse; width: 80%; background: white; }
-    th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-    th { background: #0080ff; color: white; }
-    tr:nth-child(even) { background: #f2f2f2; }
-    .error { color: red; font-weight: bold; }
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f8f9fa; }
+    h2 { color: #007bff; text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th { background: #007bff; color: white; }
   </style>
 </head>
 <body>
   <h2>Datos desde Google Sheets</h2>
-  <table id="tablaDatos">
+  <p id="ultimaActualizacion" style="text-align:center; font-weight:bold;"></p>
+  <table>
     <thead>
       <tr>
         <th>Hora</th>
@@ -24,43 +23,52 @@
         <th>Lluvia (mm)</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="tablaDatos"></tbody>
   </table>
 
   <script>
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2ChkKcZ75F8HQSGIDIx18UHtHYzDH-p9wcxsw2IMQyiP9NFQmqLvY7fwh4us6bpHsn3YDiLUIhfp/pub?gid=1825751976&single=true&output=csv";
+    const tabla = document.getElementById("tablaDatos");
+    const actualizar = document.getElementById("ultimaActualizacion");
+
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2ChkKcZ75F8HQSGIDIx18UHtHYzDH-p9wcxsw2IMQyiP9NFQmqLvY7fwh4us6bpHsn3YDiLUIhfp/pub?gid=1825751976&single=true&output=csv"; // reemplaza con tu URL publicada
 
     async function cargarDatos() {
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
 
-        const filas = text.trim().split("\n").map(l => l.split(","));
-        
-        const tbody = document.querySelector("#tablaDatos tbody");
-        tbody.innerHTML = "";
+        const filas = text.split(/\r?\n/).filter(l => l.trim() !== "");
+        const datos = filas.slice(1); // quitar cabecera
 
-        // Omitir cabecera (fila 0)
-        for (let i = 1; i < filas.length; i++) {
-          let fila = filas[i];
-          const filaHTML = `
+        tabla.innerHTML = "";
+
+        datos.forEach(fila => {
+          // separar por tabulador (\t)
+          const cols = fila.split("\t").map(c => {
+            // reemplazar coma por punto y convertir a número si es posible
+            const valorLimpio = c.replace(/"/g, "").replace(",", ".");
+            const num = parseFloat(valorLimpio);
+            return isNaN(num) ? c : num;
+          });
+
+          tabla.insertAdjacentHTML("beforeend", `
             <tr>
-              <td>${fila[0] || ""}</td>
-              <td>${fila[1] || ""}</td>
-              <td>${fila[2] || ""}</td>
-              <td>${fila[3] || ""}</td>
+              <td>${cols[0]}</td>
+              <td>${cols[1]}</td>
+              <td>${cols[2]}</td>
+              <td>${cols[3]}</td>
             </tr>
-          `;
-          tbody.insertAdjacentHTML("beforeend", filaHTML);
-        }
+          `);
+        });
+
+        actualizar.textContent = `Última actualización: ${new Date().toLocaleTimeString()}`;
       } catch (err) {
-        document.querySelector("#tablaDatos tbody").innerHTML = 
-          `<tr><td colspan="4" class="error">Error cargando la hoja</td></tr>`;
-        console.error(err);
+        console.error("Error cargando datos:", err);
       }
     }
 
     cargarDatos();
+    setInterval(cargarDatos, 60000); // actualizar cada 60s
   </script>
 </body>
 </html>
