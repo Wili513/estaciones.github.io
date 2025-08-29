@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Datos desde Google Sheets</title>
+  <title>Datos desde Google Sheets (CSV)</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f5f5f5; text-align: center; }
     h2 { color: #0066cc; }
@@ -28,32 +28,31 @@
   </table>
 
   <script>
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2ChkKcZ75F8HQSGIDIx18UHtHYzDH-p9wcxsw2IMQyiP9NFQmqLvY7fwh4us6bpHsn3YDiLUIhfp/gviz/tq?tqx=out:json&gid=1825751976";
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2ChkKcZ75F8HQSGIDIx18UHtHYzDH-p9wcxsw2IMQyiP9NFQmqLvY7fwh4us6bpHsn3YDiLUIhfp/pub?gid=1825751976&single=true&output=csv";
 
     async function cargarDatos() {
       try {
         const res = await fetch(SHEET_URL);
         const text = await res.text();
 
-        // El JSON viene envuelto, hay que limpiar
-        const json = JSON.parse(text.substring(47, text.length - 2));
-        const rows = json.table.rows;
-
+        const filas = text.trim().split("\n").map(l => l.split(","));
+        
         const tbody = document.querySelector("#tablaDatos tbody");
         tbody.innerHTML = "";
 
-        rows.forEach(row => {
-          const celdas = row.c.map(c => c ? c.v : "");
+        // Omitir cabecera (fila 0)
+        for (let i = 1; i < filas.length; i++) {
+          let fila = filas[i];
           const filaHTML = `
             <tr>
-              <td>${celdas[0]}</td>
-              <td>${celdas[1]}</td>
-              <td>${celdas[2]}</td>
-              <td>${celdas[3]}</td>
+              <td>${fila[0] || ""}</td>
+              <td>${fila[1] || ""}</td>
+              <td>${fila[2] || ""}</td>
+              <td>${fila[3] || ""}</td>
             </tr>
           `;
           tbody.insertAdjacentHTML("beforeend", filaHTML);
-        });
+        }
       } catch (err) {
         document.querySelector("#tablaDatos tbody").innerHTML = 
           `<tr><td colspan="4" class="error">Error cargando la hoja</td></tr>`;
