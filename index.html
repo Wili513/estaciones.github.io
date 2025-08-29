@@ -26,46 +26,51 @@
   </table>
 
   <script>
-    const tabla = document.getElementById("tablaDatos");
+    // ✅ Usa el endpoint GViz publicado (no CSV) y se evita CORS
+    const GVIZ_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSxObb2nasmk3BsnNDjWiJ8R80J-6Z-pQFcHU5DTYf3ybR4VLBBGxAV6e5JaEuEYY6rPVoRJxeZ4a9_/gviz/tq?tqx=out:json&gid=1773567797";
 
-    // 👉 Tu hoja en CSV
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSxObb2nasmk3BsnNDjWiJ8R80J-6Z-pQFcHU5DTYf3ybR4VLBBGxAV6e5JaEuEYY6rPVoRJxeZ4a9_/pub?gid=1773567797&single=true&output=csv";
-    //const SHEET_URL "https://docs.google.com/spreadsheets/d/e/2PACX-1vTm2ChkKcZ75F8HQSGIDIx18UHtHYzDH-p9wcxsw2IMQyiP9NFQmqLvY7fwh4us6bpHsn3YDiLUIhfp/pub?gid=1825751976&single=true&output=csv";
-    async function cargarDatos() {
-      try {
-        const res = await fetch(SHEET_URL);
-        const text = await res.text();
+    function cargarDatosConGViz() {
+      // Prepara el manejador global que Google llamará:
+      window.google = window.google || {};
+      window.google.visualization = window.google.visualization || {};
+      window.google.visualization.Query = window.google.visualization.Query || {};
 
-        // separar filas (soporta Windows y Linux)
-        const filas = text.trim().split(/\r?\n/);
+      window.google.visualization.Query.setResponse = function(resp) {
+        const tbody = document.getElementById("tablaDatos");
+        tbody.innerHTML = "";
 
-        // quitar cabecera
-        const datos = filas.slice(1);
+        if (!resp || resp.status !== "ok" || !resp.table || !resp.table.rows) {
+          tbody.innerHTML = `<tr><td colspan="4" style="color:red;">No se pudieron leer los datos</td></tr>`;
+          return;
+        }
 
-        tabla.innerHTML = "";
+        // Recorre filas y coloca las 4 primeras columnas (Hora, Temp, Humedad, Lluvia)
+        resp.table.rows.forEach(r => {
+          const c = r.c || [];
+          // Usa valor formateado (f) si existe, si no el valor bruto (v)
+          const val = i => (c[i] && (c[i].f ?? c[i].v)) ?? "";
 
-        datos.forEach(fila => {
-          // regex para separar columnas respetando comillas
-          const regex = /(".*?"|[^",]+)(?=\s*,|\s*$)/g;
-          const cols = [...fila.matchAll(regex)].map(m => m[0].replace(/^"|"$/g, ""));
-
-          tabla.insertAdjacentHTML("beforeend", `
-            <tr>
-              <td>${cols[0] || ""}</td>
-              <td>${cols[1] || ""}</td>
-              <td>${cols[2] || ""}</td>
-              <td>${cols[3] || ""}</td>
-            </tr>
-          `);
+          const tr = document.createElement("tr");
+          [val(0), val(1), val(2), val(3)].forEach(v => {
+            const td = document.createElement("td");
+            td.textContent = v;
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
         });
-      } catch (err) {
-        console.error("Error cargando datos:", err);
-        tabla.innerHTML = `<tr><td colspan="4" style="color:red;">Error cargando datos</td></tr>`;
-      }
+      };
+
+      // Inyecta el script (evita CORS) con cache-busting
+      const s = document.createElement("script");
+      s.src = GVIZ_URL + "&_=" + Date.now();
+      s.onerror = () => {
+        document.getElementById("tablaDatos").innerHTML =
+          `<tr><td colspan="4" style="color:red;">Error cargando la hoja</td></tr>`;
+      };
+      document.head.appendChild(s);
     }
 
-    // cargar al abrir la página
-    cargarDatos();
+    document.addEventListener("DOMContentLoaded", cargarDatosConGViz);
   </script>
 </body>
 </html>
